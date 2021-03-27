@@ -5,6 +5,7 @@ import WatchTimetable from './components/WatchTimetable.jsx'
 
 const colorScheme = {
 	background: "#222222",
+	background2: "#2c2c2d",
 	red: "#ff6188",
 	orange: "#fc9868",
 	yellow: "#ffd866",

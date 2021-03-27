@@ -9,7 +9,8 @@ class Event extends Component {
 			color: this.props.color,
 			size: this.props.size,
 			padding: this.props.padding,
-			backgound: this.props.background
+			backgound: this.props.background,
+			dim: this.props.dim
 		}
 
 		this.hourToAngle = this.hourToAngle.bind(this);

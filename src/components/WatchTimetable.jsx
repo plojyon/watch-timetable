@@ -14,15 +14,18 @@ class WatchTimetable extends Component {
 	}
 
 	render() {
+		let logoSize = 100;
+		let today = 3;
 		return (
+			// Circular viewport
 			<div style={{
 				backgroundColor: this.state.colorScheme["background"],
 
 				border: "1px solid black",
 				borderRadius: "50%",
 
-				width: "358px",
-				height: "358px" /* -2 px due to the border */
+				width: (360 - 2)+'px',
+				height: (360 - 2)+'px' /* -2 px due to the border */
 			}}>
 				{
 					[0,1,2,3,4].map((day, i) => {
@@ -35,11 +38,23 @@ class WatchTimetable extends Component {
 								color={this.state.colorScheme[lecture.predmet.color]}
 								size="10"
 								padding={ (15 * lecture.dan + 5)}
-								background={this.state.colorScheme["background"]}
+								background={
+									day % 2?
+									this.state.colorScheme["background"] :
+									this.state.colorScheme["background2"]
+								}
+								dim={(lecture.dan == today)?"1":"0"}
 							/>
 						})
 					})
 				}
+				<img src="logo192.png" style={{
+					position: "absolute",
+					top: (360/2 - logoSize/2) + 'px',
+					left: (360/2 - logoSize/2) + 'px',
+					width: logoSize + 'px',
+					height: logoSize + 'px'
+				}} />
 			</div>
 		);
 	}
