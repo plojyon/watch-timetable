@@ -6,6 +6,9 @@ import WatchTimetable from './components/WatchTimetable.jsx'
 const colorScheme = {
 	background: "#222222",
 	background2: "#2c2c2d",
+	hand: "red", // clock hand colour
+	text: "white",
+
 	red: "#ff6188",
 	orange: "#fc9868",
 	yellow: "#ffd866",
