@@ -28,7 +28,7 @@ class Event extends Component {
 		// assuming watch screen dimensions of 360x360
 		let r = (360/2) - (this.state.size/2) - this.state.padding
 		let coord = funct(angle)*r + 360/2
-		//coord -= this.state.size/2; // translate to center of circle
+		coord -= this.state.size/2; // translate to center of circle
 		return coord;
 	}
 
@@ -52,11 +52,16 @@ class Event extends Component {
 		// an arc.
 		// Two small circles are also added on the edges for a rounded effect.
 
-		let radius = 360 - this.state.padding - this.state.size/2
-		let angleOffset = Math.atan(this.state.size / radius);
+		let startAngle = this.hourToAngle(this.state.start);
+		let endAngle = this.hourToAngle(this.state.end);
 
-		let startAngle = this.hourToAngle(this.state.start) + angleOffset;
-		let endAngle = this.hourToAngle(this.state.end) - angleOffset;
+		let radius = 360 - this.state.padding - this.state.size/2
+		let angleOffset_edges = Math.atan(this.state.size / radius);
+		console.log("angleoffset",angleOffset_edges);
+
+		startAngle += angleOffset_edges;
+		endAngle -= angleOffset_edges;
+
 		let edges = [startAngle, endAngle];
 
 		let skews = []; // 90 = no arc. 0 = full arc
@@ -77,14 +82,14 @@ class Event extends Component {
 			break;
 		}
 		console.log("skews", skews, "rotations", rotations)
-		console.log(this.getXCoord(0))
+		console.log(this.getYCoord(90))
 
 		return (
 			<>
 			{rotations.map((rotation,i) => {
 				{/* first, a wrapper div that functions as the outer circular mask */}
 				return <>
-					<div key={i} style={{
+					<div key={2*i} style={{
 						width: (360 - 2*this.state.padding) + 'px',
 						height: (360 - 2*this.state.padding) + 'px',
 						borderRadius: "50%",
@@ -101,14 +106,14 @@ class Event extends Component {
 							height: 360 + 'px',
 							backgroundColor: this.state.color,
 							position: "absolute",
-							top: 360/2 + 'px',
-							left: 360/2 + 'px',
+							top: (360/2 - this.state.padding) + 'px',
+							left: (360/2 - this.state.padding) + 'px',
 							transformOrigin: "0 0"
 						}}>
 						</div>
 					</div>
 					{/* lastly, an inner circle */}
-					<div style={{
+					<div key={2*i+1} style={{
 						width: (360 - 2*this.state.padding - 2*this.state.size) + 'px',
 						height: (360 - 2*this.state.padding - 2*this.state.size) + 'px',
 						backgroundColor: this.state.backgound,
