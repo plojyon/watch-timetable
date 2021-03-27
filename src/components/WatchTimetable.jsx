@@ -2,29 +2,45 @@ import React, { Component } from "react";
 import Event from './Event.jsx'
 import styled from "styled-components";
 
-const CircularBody = styled.div`
-	border: 1px solid black;
-	border-radius: 50%;
-
-	width: 358px;
-	height: 358px; /* -2 px due to the border */
-`;
-
 class WatchTimetable extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {}
+		this.state = {
+			timetable: this.props.timetable,
+			background: this.props.background,
+			day: this.props.day,
+			colorScheme: this.props.colorScheme
+		}
 	}
 
 	render() {
 		return (
-			<CircularBody>
-				<Event start="15" end="6" color="blue" size="5" padding="5" background="white" />
-				<Event start="6" end="15" color="red" size="5" padding="5" background="white" />
-				{/*
-				<Event start="12" end="16" color="green" size="30" padding="5" background="white" />
-				<Event start="17" end="21" color="orange" size="30" padding="5" background="white" />*/}
-			</CircularBody>
+			<div style={{
+				backgroundColor: this.state.colorScheme["background"],
+
+				border: "1px solid black",
+				borderRadius: "50%",
+
+				width: "358px",
+				height: "358px" /* -2 px due to the border */
+			}}>
+				{
+					[0,1,2,3,4].map((day, i) => {
+						return this.state.timetable.map((lecture, j) => {
+							if (day == lecture.dan)
+							return <Event
+								key={i + ' ' + j}
+								start={lecture.ura}
+								end={lecture.ura + lecture.trajanje}
+								color={this.state.colorScheme[lecture.predmet.color]}
+								size="10"
+								padding={ (15 * lecture.dan + 5)}
+								background={this.state.colorScheme["background"]}
+							/>
+						})
+					})
+				}
+			</div>
 		);
 	}
 }

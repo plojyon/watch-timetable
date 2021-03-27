@@ -56,11 +56,11 @@ class Event extends Component {
 		let endAngle = this.hourToAngle(this.state.end);
 
 		let radius = 360 - this.state.padding - this.state.size/2
-		let angleOffset_edges = Math.atan(this.state.size / radius);
-		console.log("angleoffset",angleOffset_edges);
+		let angleOffset = Math.atan(this.state.size / radius);
+		//console.log("angleoffset",angleOffset);
 
-		startAngle += angleOffset_edges;
-		endAngle -= angleOffset_edges;
+		startAngle += angleOffset;
+		endAngle -= angleOffset;
 
 		let edges = [startAngle, endAngle];
 
@@ -81,8 +81,7 @@ class Event extends Component {
 			skews.push(Math.floor(((Math.PI/2)-diff) * 360/(2*Math.PI)));
 			break;
 		}
-		console.log("skews", skews, "rotations", rotations)
-		console.log(this.getYCoord(90))
+		//console.log("skews", skews, "rotations", rotations)
 
 		return (
 			<>

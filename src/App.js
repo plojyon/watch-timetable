@@ -2,6 +2,17 @@ import React, { Component } from "react";
 import './App.css';
 import WatchTimetable from './components/WatchTimetable.jsx'
 
+
+const colorScheme = {
+	background: "#222222",
+	red: "#ff6188",
+	orange: "#fc9868",
+	yellow: "#ffd866",
+	green: "#a9de77",
+	blue: "#78dce8",
+	purple: "#ab9df2"
+}
+
 class App extends Component {
 	constructor(props) {
 		super(props);
@@ -49,7 +60,7 @@ class App extends Component {
 		if (!this.state.timetable) return <p style={{textAlign: 'center'}}>Loading</p>;
 		return (
 			<div className="App">
-				<WatchTimetable data={this.state.timetable} />
+				<WatchTimetable timetable={this.state.timetable} colorScheme={colorScheme} />
 			</div>
 		);
 	}
