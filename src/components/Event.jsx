@@ -8,7 +8,7 @@ class Event extends Component {
 			end: this.props.end,
 			color: this.props.color,
 			size: this.props.size,
-			padding: this.props.padding,
+			layer: this.props.layer,
 			backgound: this.props.background,
 			dim: this.props.dim
 		}
@@ -27,7 +27,7 @@ class Event extends Component {
 	}
 	getCoord(angle, funct) {
 		// assuming watch screen dimensions of 360x360
-		let r = (360/2) - (this.state.size/2) - this.state.padding
+		let r = (360/2) - (this.state.size/2) - this.state.layer
 		let coord = funct(angle)*r + 360/2
 		coord -= this.state.size/2; // translate to center of circle
 		return coord;
@@ -56,7 +56,7 @@ class Event extends Component {
 		let startAngle = this.hourToAngle(this.state.start);
 		let endAngle = this.hourToAngle(this.state.end);
 
-		let radius = 360 - this.state.padding - this.state.size/2
+		let radius = 360 - this.state.layer - this.state.size/2
 		let angleOffset = Math.atan(this.state.size / radius);
 		//console.log("angleoffset",angleOffset);
 
@@ -86,45 +86,46 @@ class Event extends Component {
 
 		return (
 			<>
-			{rotations.map((rotation,i) => {
-				{/* first, a wrapper div that functions as the outer circular mask */}
-				return <>
-					<div key={2*i} style={{
-						width: (360 - 2*this.state.padding) + 'px',
-						height: (360 - 2*this.state.padding) + 'px',
-						borderRadius: "50%",
-						//backgroundColor: "blue",
-						position: "fixed",
-						top: (this.state.padding) + 'px',
-						left: (this.state.padding) + 'px',
-						overflow: "hidden",
-					}}>
+
+			{/* first, a wrapper div that functions as the outer circular mask */}
+			<div style={{
+				width: (360 - 2*this.state.layer) + 'px',
+				height: (360 - 2*this.state.layer) + 'px',
+				borderRadius: "50%",
+				//backgroundColor: "blue",
+				position: "fixed",
+				top: (this.state.layer) + 'px',
+				left: (this.state.layer) + 'px',
+				overflow: "hidden",
+			}}>
+				{rotations.map((rotation,i) => {
+					return <>
 						{/* then, the inner rectangle, skewed to only fill the required segment */}
-						<div style={{
+						<div key={2*i} style={{
 							transform: "rotate("+(rotation)+"deg) skew("+skews[i]+"deg)",
 							width: 360 + 'px',
 							height: 360 + 'px',
 							backgroundColor: this.state.color,
 							position: "absolute",
-							top: (360/2 - this.state.padding) + 'px',
-							left: (360/2 - this.state.padding) + 'px',
+							top: (360/2 - this.state.layer) + 'px',
+							left: (360/2 - this.state.layer) + 'px',
 							transformOrigin: "0 0",
 							filter: this.state.dim?"brightness(50%)":""
-						}}>
-						</div>
-					</div>
-					{/* lastly, an inner circle */}
-					<div key={2*i+1} style={{
-						width: (360 - 2*this.state.padding - 2*this.state.size) + 'px',
-						height: (360 - 2*this.state.padding - 2*this.state.size) + 'px',
-						backgroundColor: this.state.backgound,
-						position: "absolute",
-						top: (parseInt(this.state.padding) + parseInt(this.state.size)) + 'px',
-						left: (parseInt(this.state.padding) + parseInt(this.state.size)) + 'px',
-						borderRadius: "50%"
-					}}></div>
-				</>
-			})}
+						}} />
+
+						{/* lastly, an inner circle */}
+						<div key={2*i+1} style={{
+							width: (360 - 2*this.state.layer - 2*this.state.size) + 'px',
+							height: (360 - 2*this.state.layer - 2*this.state.size) + 'px',
+							backgroundColor: this.state.backgound,
+							position: "fixed",
+							top: (parseInt(this.state.layer) + parseInt(this.state.size)) + 'px',
+							left: (parseInt(this.state.layer) + parseInt(this.state.size)) + 'px',
+							borderRadius: "50%"
+						}} />
+					</>
+				})}
+			</div>
 
 			{/* dots on the edges for a rounded effect */}
 			{edges.map((angle,i) => {

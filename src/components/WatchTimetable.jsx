@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Event from './Event.jsx'
-import styled from "styled-components";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -21,7 +20,7 @@ class WatchTimetable extends Component {
 		let timeRotation = 30;
 		let fontsizeDay = 14;
 		let fontsizeStatus = 10;
-		let status = "30 min of LINALG left" // "You're free", "ANA starting in 17 min"
+		let status = "36 min of ARS left" // "You're free", "ANA starting in 17 min"
 		return (
 			// Circular viewport
 			<div style={{
@@ -43,7 +42,7 @@ class WatchTimetable extends Component {
 								end={lecture.ura + lecture.trajanje}
 								color={this.state.colorScheme[lecture.predmet.color]}
 								size="10"
-								padding={ (15 * lecture.dan + 5)}
+								layer={ (15 * lecture.dan + 5)}
 								background={
 									day % 2?
 									this.state.colorScheme["background"] :
