@@ -43,7 +43,7 @@ class WatchTimetable extends Component {
 									this.state.colorScheme["background"] :
 									this.state.colorScheme["background2"]
 								}
-								dim={(lecture.dan == today)?"1":"0"}
+								dim={(lecture.dan == today)?0:1}
 							/>
 						})
 					})

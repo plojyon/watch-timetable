@@ -108,7 +108,8 @@ class Event extends Component {
 							position: "absolute",
 							top: (360/2 - this.state.padding) + 'px',
 							left: (360/2 - this.state.padding) + 'px',
-							transformOrigin: "0 0"
+							transformOrigin: "0 0",
+							filter: this.state.dim?"brightness(50%)":""
 						}}>
 						</div>
 					</div>
@@ -134,7 +135,8 @@ class Event extends Component {
 					height: this.state.size + 'px',
 					position: "absolute",
 					top: this.getYCoord(angle) + 'px',
-					left: this.getXCoord(angle) + 'px'
+					left: this.getXCoord(angle) + 'px',
+					filter: this.state.dim?"brightness(50%)":""
 				}}/>
 			})}
 			</>
