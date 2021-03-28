@@ -92,39 +92,61 @@ class WatchTimetable extends Component {
 		if (upcoming.type === "start") status = upcoming.abbr + " in "+upcoming.eta.str;
 		if (upcoming.type === "end") status = upcoming.eta.str+" of "+upcoming.abbr+" left";
 
+		let eventWidth = 12;
+		let margin = 2;
+		let initialMargin = 5;
+		// 5 + 15 + 5 + 5 + 15 + 5 + 5 + 15 + 5
+		// --event----|---event2---|---event3---
+		let layerStart = (layer) => (eventWidth+2*margin)*layer + initialMargin;
+
 		return (
 			// Circular viewport
 			<div style={{
 				backgroundColor: this.state.colorScheme["background"],
 
-				border: "1px solid black",
 				borderRadius: "50%",
 
-				width: (360 - 2)+'px',
-				height: (360 - 2)+'px' /* -2 px due to the border */
+				width: 360+'px',
+				height: 360+'px'
 			}}>
 				{
-					[0,1,2,3,4].map((day, i) => {
+					[0, 1, 2, 3, 4, 5, 6, 7].map((day) => {
+						// cosmetic div: darker circles every even day
+						return <div style={{
+							backgroundColor: (day % 2)?
+								this.state.colorScheme["background"] :
+								this.state.colorScheme["background2"],
+							borderRadius: "50%",
+							width: (360 - 2*layerStart(day))+'px',
+							height: (360 - 2*layerStart(day))+'px',
+							position: "fixed",
+							top: (layerStart(day)) + 'px',
+							left: (layerStart(day)) + 'px',
+						}} />
+					})
+				}
+				{
+					[0, 1, 2, 3, 4].map((day, i) => {
 						return this.state.timetable.map((lecture, j) => {
 							if (day === lecture.dan)
-							return <Event
-								key={i + '_' + j}
-								id={i + '_' + j}
-								start={lecture.ura}
-								end={lecture.ura + lecture.trajanje}
-								color={this.state.colorScheme[lecture.predmet.color]}
-								text={lecture.predmet.abbr}
-								outline="none"
-								size="10"
-								outerMargin={ (15 * lecture.dan + 5) }
-								padding="5"
-								background={
-									day % 2?
-									this.state.colorScheme["background"] :
-									this.state.colorScheme["background2"]
-								}
-								dim={(lecture.dan === today)? false:true}
-							/>
+								return <Event
+									key={i + '_' + j}
+									id={i + '_' + j}
+									start={lecture.ura}
+									end={lecture.ura + lecture.trajanje}
+									color={this.state.colorScheme[lecture.predmet.color]}
+									text={lecture.predmet.abbr}
+									outline="none"
+									size={ eventWidth }
+									outerMargin={ layerStart(day) }
+									padding={ margin }
+									background={
+										day % 2?
+										this.state.colorScheme["background"] :
+										this.state.colorScheme["background2"]
+									}
+									dim={(lecture.dan === today)? false:true}
+								/>
 							else return undefined;
 						})
 					})
@@ -156,6 +178,7 @@ class WatchTimetable extends Component {
 					color: this.state.colorScheme["text"],
 					position: "absolute",
 					fontSize: fontsizeDay + "px",
+					fontWeight: "bold",
 					top: (360/2 - logoSize/2 - fontsizeDay - 10) + 'px',
 					left: 0,
 					margin: 0,
@@ -169,6 +192,7 @@ class WatchTimetable extends Component {
 					color: this.state.colorScheme["text"],
 					position: "absolute",
 					fontSize: fontsizeStatus + "px",
+					fontWeight: "bold",
 					top: (360/2 + logoSize/2 + 10) + 'px',
 					left: 0,
 					margin: 0,

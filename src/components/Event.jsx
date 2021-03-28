@@ -18,9 +18,6 @@ class Event extends Component {
 		}
 
 		this.hourToAngle = this.hourToAngle.bind(this);
-		//this.getCoord = this.getCoord.bind(this);
-		//this.getXCoord = this.getXCoord.bind(this);
-		//this.getYCoord = this.getYCoord.bind(this);
 	}
 
 	hourToAngle(hour) {
@@ -72,15 +69,23 @@ class Event extends Component {
 			// draw outer arc
 			" A "+radius.outer+" "+radius.outer+" 0 "+size+" 0 "+edges.start.outer.x+" "+edges.start.outer.y
 		// A rx, ry, angle, large/small arc, sweep, dx, dy
-		
+
 		return (
-			<svg viewBox="0 0 360 360" style={{position: "absolute", top:"0", left: "0"}}>
+			<svg viewBox="0 0 360 360" style={{
+				position: "absolute",
+				top:"0",
+				left: "0",
+				width: '360px',
+				height: '360px'
+			}}>
 				<path
 					id={"curve_"+this.state.id}
 					stroke={this.state.outline}
 					fill={this.state.color}
 					d={svgString}
-					style={{filter: (this.state.dim?"brightness(50%)":"brightness(100%)")}}
+					style={{
+						filter: (this.state.dim?"brightness(50%)":"brightness(100%)")
+					}}
 				/>
 				<text width="500">
 					<textPath xlinkHref={"#curve_"+this.state.id} textAnchor="middle" startOffset="25%">
