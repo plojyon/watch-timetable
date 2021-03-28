@@ -135,7 +135,9 @@ class WatchTimetable extends Component {
 									start={lecture.ura}
 									end={lecture.ura + lecture.trajanje}
 									color={this.state.colorScheme[lecture.predmet.color]}
+									textColor={this.state.colorScheme["backgound"]}
 									text={lecture.predmet.abbr}
+									fontSize={ eventWidth - 3 }
 									outline="none"
 									size={ eventWidth }
 									outerMargin={ layerStart(day) }

@@ -7,7 +7,9 @@ class Event extends Component {
 			start: this.props.start,
 			end: this.props.end,
 			text: this.props.text,
+			fontSize: this.props.fontSize,
 			color: this.props.color,
+			textColor: this.props.color,
 			outline: this.props.outline,
 			size: this.props.size,
 			outerMargin: this.props.outerMargin,
@@ -70,6 +72,8 @@ class Event extends Component {
 			" A "+radius.outer+" "+radius.outer+" 0 "+size+" 0 "+edges.start.outer.x+" "+edges.start.outer.y
 		// A rx, ry, angle, large/small arc, sweep, dx, dy
 
+		let textMargin = (this.state.size - this.state.fontSize)/2;
+
 		return (
 			<svg viewBox="0 0 360 360" style={{
 				position: "absolute",
@@ -87,7 +91,7 @@ class Event extends Component {
 						filter: (this.state.dim?"brightness(50%)":"brightness(100%)")
 					}}
 				/>
-				<text width="500">
+				<text y={ (-textMargin) + "px"} fontSize={(this.state.fontSize*1.4) + 'px'} style={{fill: this.props.textColor}}>
 					<textPath xlinkHref={"#curve_"+this.state.id} textAnchor="middle" startOffset="25%">
 						{this.state.text}
 					</textPath>
