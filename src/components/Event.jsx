@@ -14,7 +14,7 @@ class Event extends Component {
 			padding: this.props.padding,
 			backgound: this.props.background,
 			dim: this.props.dim,
-			id: this.props.key || Math.floor(Math.random() * 1000)
+			id: this.props.id || Math.floor(Math.random() * 100000)
 		}
 
 		this.hourToAngle = this.hourToAngle.bind(this);
@@ -48,34 +48,31 @@ class Event extends Component {
 		angle.end -= angleOffset;
 
 		let edges = {};
-		["start", "end"].map((startend) => {
+		["start", "end"].forEach((startend) => {
 			edges[startend] = {};
-			["outer", "inner", "center"].map((outincenter) => {
+			["outer", "inner", "center"].forEach((outincenter) => {
 				edges[startend][outincenter] = {}
 				edges[startend][outincenter].x = Math.round(Math.cos(angle[startend]) * radius[outincenter] + 360/2);
 				edges[startend][outincenter].y = Math.round(Math.sin(angle[startend]) * radius[outincenter] + 360/2);
 			})
 		})
 
-		let globalCenter = {x: 360/2, y: 360/2}
-
 		let isLarge = Math.abs(this.state.start - this.state.end) > 6
 		let size = isLarge? "1" : "0";
 
-		let svgString = ""+
+		let svgString =
 			// move to starting position (outer start)
 			" M "+edges.start.outer.x+" "+edges.start.outer.y+
 			// draw arc around start egde
 			" A "+(this.state.size/2)+" "+(this.state.size/2)+" 0 0 0 "+edges.start.inner.x+" "+edges.start.inner.y+
 			// draw inner arc
-			" A "+radius.inner+" "+radius.inner+" "+" 0 "+size+" 1 "+edges.end.inner.x+" "+edges.end.inner.y+
+			" A "+radius.inner+" "+radius.inner+" 0 "+size+" 1 "+edges.end.inner.x+" "+edges.end.inner.y+
 			// draw arc around end edge
 			" A "+(this.state.size/2)+" "+(this.state.size/2)+" 0 0 0 "+edges.end.outer.x+" "+edges.end.outer.y+
 			// draw outer arc
-			" A "+radius.outer+" "+radius.outer+" "+" 0 "+size+" 0 "+edges.start.outer.x+" "+edges.start.outer.y
-		console.log(svgString);
-		// rx, ry, angle, large/small arc, sweep, dx, dy
-
+			" A "+radius.outer+" "+radius.outer+" 0 "+size+" 0 "+edges.start.outer.x+" "+edges.start.outer.y
+		// A rx, ry, angle, large/small arc, sweep, dx, dy
+		
 		return (
 			<svg viewBox="0 0 360 360" style={{position: "absolute", top:"0", left: "0"}}>
 				<path
@@ -83,7 +80,7 @@ class Event extends Component {
 					stroke={this.state.outline}
 					fill={this.state.color}
 					d={svgString}
-					style={{filter: this.state.dim?"brightness(50%)":""}}
+					style={{filter: (this.state.dim?"brightness(50%)":"brightness(100%)")}}
 				/>
 				<text width="500">
 					<textPath xlinkHref={"#curve_"+this.state.id} textAnchor="middle" startOffset="25%">
