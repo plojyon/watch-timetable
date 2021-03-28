@@ -9,7 +9,7 @@ class Event extends Component {
 			text: this.props.text,
 			fontSize: this.props.fontSize,
 			color: this.props.color,
-			textColor: this.props.color,
+			textColor: this.props.textColor,
 			outline: this.props.outline,
 			size: this.props.size,
 			outerMargin: this.props.outerMargin,
@@ -91,7 +91,7 @@ class Event extends Component {
 						filter: (this.state.dim?"brightness(50%)":"brightness(100%)")
 					}}
 				/>
-				<text y={ (-textMargin) + "px"} fontSize={(this.state.fontSize*1.4) + 'px'} style={{fill: this.props.textColor}}>
+				<text y={ (-textMargin) + "px"} fontSize={(this.state.fontSize*1.4) + 'px'} style={{fill: this.state.textColor}}>
 					<textPath xlinkHref={"#curve_"+this.state.id} textAnchor="middle" startOffset="25%">
 						{this.state.text}
 					</textPath>
