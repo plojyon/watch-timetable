@@ -16,8 +16,10 @@ class WatchTimetable extends Component {
 
 	render() {
 		let logoSize = 100;
-		let today = 3;
-		let timeRotation = 30;
+
+		let current = new Date();
+		let today = (current.getDay() + 6) % 7;
+		let timeRotation = current.getHours() * (2*Math.PI/12);
 		let fontsizeDay = 14;
 		let fontsizeStatus = 10;
 		let status = "36 min of ARS left" // "You're free", "ANA starting in 17 min"
@@ -37,12 +39,15 @@ class WatchTimetable extends Component {
 						return this.state.timetable.map((lecture, j) => {
 							if (day == lecture.dan)
 							return <Event
-								key={i + ' ' + j}
+								key={i + '_' + j}
 								start={lecture.ura}
 								end={lecture.ura + lecture.trajanje}
 								color={this.state.colorScheme[lecture.predmet.color]}
+								text={lecture.predmet.abbr}
+								outline="none"
 								size="10"
-								layer={ (15 * lecture.dan + 5)}
+								outerMargin={ (15 * lecture.dan + 5) }
+								padding="5"
 								background={
 									day % 2?
 									this.state.colorScheme["background"] :
@@ -67,7 +72,7 @@ class WatchTimetable extends Component {
 				}} />
 
 				{/* logo */}
-				<img src="logo192.png" style={{
+				<img src="logo192.png" alt="logo" style={{
 					position: "absolute",
 					top: (360/2 - logoSize/2) + 'px',
 					left: (360/2 - logoSize/2) + 'px',

@@ -6,31 +6,21 @@ class Event extends Component {
 		this.state = {
 			start: this.props.start,
 			end: this.props.end,
+			text: this.props.text,
 			color: this.props.color,
+			outline: this.props.outline,
 			size: this.props.size,
-			layer: this.props.layer,
+			outerMargin: this.props.outerMargin,
+			padding: this.props.padding,
 			backgound: this.props.background,
-			dim: this.props.dim
+			dim: this.props.dim,
+			id: this.props.key || Math.floor(Math.random() * 1000)
 		}
 
 		this.hourToAngle = this.hourToAngle.bind(this);
-		this.getCoord = this.getCoord.bind(this);
-		this.getXCoord = this.getXCoord.bind(this);
-		this.getYCoord = this.getYCoord.bind(this);
-	}
-
-	getXCoord(angle) {
-		return this.getCoord(angle, Math.cos);
-	}
-	getYCoord(angle) {
-		return this.getCoord(angle, Math.sin);
-	}
-	getCoord(angle, funct) {
-		// assuming watch screen dimensions of 360x360
-		let r = (360/2) - (this.state.size/2) - this.state.layer
-		let coord = funct(angle)*r + 360/2
-		coord -= this.state.size/2; // translate to center of circle
-		return coord;
+		//this.getCoord = this.getCoord.bind(this);
+		//this.getXCoord = this.getXCoord.bind(this);
+		//this.getYCoord = this.getYCoord.bind(this);
 	}
 
 	hourToAngle(hour) {
@@ -40,107 +30,67 @@ class Event extends Component {
 	}
 
 	render() {
-		// The following section is very hacky, enter at own discretion
-
-		// For each "quadrant" of the circle, we have a circle absolutely
-		// positioned at the screen's center with "overflow: hidden".
-		// This masks anything going outside the circular boundaries.
-		// Then, a rectangle is absolutely positioned at the
-		// screen's center, and skewed so that it only covers a portion of a circle,
-		// similar to a pie chart.
-		// Lastly, another "mask" is applied (a circular div at the screen's center)
-		// with the same colour as the background, to transform the pie chart into
-		// an arc.
-		// Two small circles are also added on the edges for a rounded effect.
-
-		let startAngle = this.hourToAngle(this.state.start);
-		let endAngle = this.hourToAngle(this.state.end);
-
-		let radius = 360 - this.state.layer - this.state.size/2
-		let angleOffset = Math.atan(this.state.size / radius);
-		//console.log("angleoffset",angleOffset);
-
-		startAngle += angleOffset;
-		endAngle -= angleOffset;
-
-		let edges = [startAngle, endAngle];
-
-		let skews = []; // 90 = no arc. 0 = full arc
-		let rotations = []; // offset the beginning of the quadrant
-
-		while (endAngle < startAngle) endAngle += 2*Math.PI;
-
-		let currentAngle = startAngle;
-		while (true) {
-			rotations.push(Math.floor(currentAngle * 360/(2*Math.PI)));
-			let diff = endAngle - currentAngle;
-			if (diff > Math.PI/2) {
-				skews.push(0);
-				currentAngle += Math.PI/2;
-				continue;
-			}
-			skews.push(Math.floor(((Math.PI/2)-diff) * 360/(2*Math.PI)));
-			break;
+		// angle at which the start/end hour is
+		let angle = {
+			start: this.hourToAngle(this.state.start),
+			end: this.hourToAngle(this.state.end)
 		}
-		//console.log("skews", skews, "rotations", rotations)
+
+		// distance from screen center to outer/center/inner of the curve
+		let radius = {};
+		radius.center = 360/2 - this.state.outerMargin - this.state.padding - this.state.size/2;
+		radius.outer = radius.center + this.state.size/2;
+		radius.inner = radius.center - this.state.size/2;
+
+		let r = 360/2 - this.state.outerMargin - this.state.size/2;
+		let angleOffset = Math.atan((this.state.size/2) / r);
+		angle.start += angleOffset;
+		angle.end -= angleOffset;
+
+		let edges = {};
+		["start", "end"].map((startend) => {
+			edges[startend] = {};
+			["outer", "inner", "center"].map((outincenter) => {
+				edges[startend][outincenter] = {}
+				edges[startend][outincenter].x = Math.round(Math.cos(angle[startend]) * radius[outincenter] + 360/2);
+				edges[startend][outincenter].y = Math.round(Math.sin(angle[startend]) * radius[outincenter] + 360/2);
+			})
+		})
+
+		let globalCenter = {x: 360/2, y: 360/2}
+
+		let isLarge = Math.abs(this.state.start - this.state.end) > 6
+		let size = isLarge? "1" : "0";
+
+		let svgString = ""+
+			// move to starting position (outer start)
+			" M "+edges.start.outer.x+" "+edges.start.outer.y+
+			// draw arc around start egde
+			" A "+(this.state.size/2)+" "+(this.state.size/2)+" 0 0 0 "+edges.start.inner.x+" "+edges.start.inner.y+
+			// draw inner arc
+			" A "+radius.inner+" "+radius.inner+" "+" 0 "+size+" 1 "+edges.end.inner.x+" "+edges.end.inner.y+
+			// draw arc around end edge
+			" A "+(this.state.size/2)+" "+(this.state.size/2)+" 0 0 0 "+edges.end.outer.x+" "+edges.end.outer.y+
+			// draw outer arc
+			" A "+radius.outer+" "+radius.outer+" "+" 0 "+size+" 0 "+edges.start.outer.x+" "+edges.start.outer.y
+		console.log(svgString);
+		// rx, ry, angle, large/small arc, sweep, dx, dy
 
 		return (
-			<>
-
-			{/* first, a wrapper div that functions as the outer circular mask */}
-			<div style={{
-				width: (360 - 2*this.state.layer) + 'px',
-				height: (360 - 2*this.state.layer) + 'px',
-				borderRadius: "50%",
-				//backgroundColor: "blue",
-				position: "fixed",
-				top: (this.state.layer) + 'px',
-				left: (this.state.layer) + 'px',
-				overflow: "hidden",
-			}}>
-				{rotations.map((rotation,i) => {
-					return <>
-						{/* then, the inner rectangle, skewed to only fill the required segment */}
-						<div key={2*i} style={{
-							transform: "rotate("+(rotation)+"deg) skew("+skews[i]+"deg)",
-							width: 360 + 'px',
-							height: 360 + 'px',
-							backgroundColor: this.state.color,
-							position: "absolute",
-							top: (360/2 - this.state.layer) + 'px',
-							left: (360/2 - this.state.layer) + 'px',
-							transformOrigin: "0 0",
-							filter: this.state.dim?"brightness(50%)":""
-						}} />
-
-						{/* lastly, an inner circle */}
-						<div key={2*i+1} style={{
-							width: (360 - 2*this.state.layer - 2*this.state.size) + 'px',
-							height: (360 - 2*this.state.layer - 2*this.state.size) + 'px',
-							backgroundColor: this.state.backgound,
-							position: "fixed",
-							top: (parseInt(this.state.layer) + parseInt(this.state.size)) + 'px',
-							left: (parseInt(this.state.layer) + parseInt(this.state.size)) + 'px',
-							borderRadius: "50%"
-						}} />
-					</>
-				})}
-			</div>
-
-			{/* dots on the edges for a rounded effect */}
-			{edges.map((angle,i) => {
-				return <div key={i} style={{
-					borderRadius: "50%",
-					backgroundColor: this.state.color,
-					width: this.state.size + 'px',
-					height: this.state.size + 'px',
-					position: "absolute",
-					top: this.getYCoord(angle) + 'px',
-					left: this.getXCoord(angle) + 'px',
-					filter: this.state.dim?"brightness(50%)":""
-				}}/>
-			})}
-			</>
+			<svg viewBox="0 0 360 360" style={{position: "absolute", top:"0", left: "0"}}>
+				<path
+					id={"curve_"+this.state.id}
+					stroke={this.state.outline}
+					fill={this.state.color}
+					d={svgString}
+					style={{filter: this.state.dim?"brightness(50%)":""}}
+				/>
+				<text width="500">
+					<textPath xlinkHref={"#curve_"+this.state.id} textAnchor="middle" startOffset="25%">
+						{this.state.text}
+					</textPath>
+				</text>
+			</svg>
 		);
 	}
 }
