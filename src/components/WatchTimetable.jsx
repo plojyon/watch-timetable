@@ -78,7 +78,7 @@ class WatchTimetable extends Component {
 	}
 
 	render() {
-		let logoSize = 100;
+		let logoSize = 90;
 
 		let current = new Date();
 		let today = (current.getDay() + 6) % 7;
@@ -110,7 +110,7 @@ class WatchTimetable extends Component {
 				height: 360+'px'
 			}}>
 				{
-					[0, 1, 2, 3, 4, 5, 6, 7].map((day) => {
+					[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((day) => {
 						// cosmetic div: darker circles every even day
 						return <div style={{
 							backgroundColor: (day % 2)?
