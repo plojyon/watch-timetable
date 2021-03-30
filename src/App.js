@@ -31,7 +31,7 @@ class App extends Component {
 
 	componentDidMount() {
 		// can't call setState if component hasn't mounted yet
-		this.fetchTableData().then(data => this.setState({timetable: data}));
+		this.fetchTableData();
 	}
 
 	async fetchTableData() {
@@ -51,10 +51,10 @@ class App extends Component {
 			let data = await response.json();
 			//data = this.handleDuplicates(data);
 			console.log(data)
-			return data;
+			this.setState({timetable: data});
 		} else {
 			console.error(response);
-			this.setState( { error: response.status + ": " + response.statusText } );
+			this.setState( { error: "error fetching timetable: " + response.status + ": " + response.statusText } );
 			return 0;
 		}
 	}
@@ -64,7 +64,7 @@ class App extends Component {
 		if (!this.state.timetable) return <p style={{textAlign: 'center'}}>Loading</p>;
 		return (
 			<div className="App">
-				<WatchTimetable timetable={this.state.timetable} colorScheme={colorScheme} />
+				<WatchTimetable timetable={this.state.timetable} colorScheme={colorScheme} refreshTimetable={this.fetchTableData} />
 			</div>
 		);
 	}
