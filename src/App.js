@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import './App.css';
 import WatchTimetable from './components/WatchTimetable.jsx'
 
-
 const colorScheme = {
 	background: "#222222",
 	background2: "#2c2c2d",

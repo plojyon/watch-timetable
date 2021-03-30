@@ -1,18 +1,24 @@
 import React, { Component } from "react";
 import Event from './Event.jsx'
 
+const watchSize = 360;
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-const fontsizeStatus = 10;
-const fontsizeDay = 10;
 const logoSize = 90;
-const textRadius = 130;
 const eventWidth = 15;
 const margin = 2;
 const initialMargin = 5;
 // 2 + 12 + 2 + 2 + 12 + 2 + 2 + 12 + 2
 // --event----|---event2---|---event3---
 const layerStart = (layer) => (eventWidth+2*margin)*layer + initialMargin;
+
+const fontSize = {day: 10, status: 10};
+// if you change fontSize, you will need to add a constant term to the appropriate textRadius
+// I call it radius +C, and Leibniz did it first
+const textRadius = {
+	status: watchSize/2 - layerStart(6) + (eventWidth+2*margin - fontSize.status*1.4),
+	day: watchSize/2 - layerStart(5) - fontSize.day*1.4/2 +2 // fuck it, +2px
+}
 
 const refreshInterval = 5 * 1000; // in milliseconds
 
@@ -27,6 +33,8 @@ class WatchTimetable extends Component {
 
 			currentTime: new Date(),
 			status: "error", // "36 min of ARS left", "LINALG in 1h 17 min", "Done for today"
+
+			interval: 0
 		}
 
 		this.getEvents = this.getEvents.bind(this);
@@ -35,16 +43,20 @@ class WatchTimetable extends Component {
 	}
 
 	componentDidMount() {
-		setInterval(this.refresh, refreshInterval);
+		let interval_id = setInterval(this.refresh, refreshInterval);
+		this.setState({interval: interval_id})
 		this.refresh();
+	}
+	componentWillUnmount() {
+		clearInterval(this.state.interval);
 	}
 
 	refresh() {
 		let currentTime = new Date();
 
 		let today = (currentTime.getDay() + 6) % 7;
-		let timeRotation = currentTime.getHours() * (360/12) - 90;
-		timeRotation += currentTime.getMinutes() * ((360/12)/60);
+		let timeRotation = currentTime.getHours() * (watchSize/12) - 90;
+		timeRotation += currentTime.getMinutes() * ((watchSize/12)/60);
 
 		let status = "";
 		let upcoming = this.getNextEvent(currentTime);
@@ -52,7 +64,7 @@ class WatchTimetable extends Component {
 		if (upcoming.type === "start") status = upcoming.abbr + " in "+upcoming.eta.str;
 		if (upcoming.type === "end") status = upcoming.eta.str+" of "+upcoming.abbr+" left";
 
-		this.setState({ currentTime, today, timeRotation, status });
+		this.setState({ currentTime: currentTime, today: today, timeRotation: timeRotation, status: status });
 	}
 
 	getEvents() {
@@ -114,6 +126,9 @@ class WatchTimetable extends Component {
 	}
 
 	render() {
+		// fucking react and their fucking state updates fuckery
+		if (this.state.today === undefined) return <p>Loading...</p>;
+
 		return (
 			// Circular viewport
 			<div style={{
@@ -121,8 +136,8 @@ class WatchTimetable extends Component {
 
 				borderRadius: "50%",
 
-				width: 360+'px',
-				height: 360+'px'
+				width: watchSize+'px',
+				height: watchSize+'px'
 			}}>
 				{
 					// cosmetic div: darker circles every even day
@@ -132,8 +147,8 @@ class WatchTimetable extends Component {
 								this.state.colorScheme["background"] :
 								this.state.colorScheme["background2"],
 							borderRadius: "50%",
-							width: (360 - 2*layerStart(day))+'px',
-							height: (360 - 2*layerStart(day))+'px',
+							width: (watchSize - 2*layerStart(day))+'px',
+							height: (watchSize - 2*layerStart(day))+'px',
 							position: "fixed",
 							top: (layerStart(day)) + 'px',
 							left: (layerStart(day)) + 'px',
@@ -151,8 +166,7 @@ class WatchTimetable extends Component {
 							color={this.state.colorScheme[lecture.predmet.color]}
 							textColor={this.state.colorScheme["background"]}
 							text={lecture.predmet.abbr}
-							fontSize={ eventWidth - 3 }
-							outline="none"
+							fontSize={ eventWidth -2 }
 							size={ eventWidth }
 							outerMargin={ layerStart(lecture.dan) }
 							padding={ margin }
@@ -169,9 +183,9 @@ class WatchTimetable extends Component {
 				{/* clock hand */}
 				<div style={{
 					position: "absolute",
-					top: (360/2) + 'px',
-					left: (360/2) + 'px',
-					width: (360/2) + 'px',
+					top: (watchSize/2) + 'px',
+					left: (watchSize/2) + 'px',
+					width: (watchSize/2) + 'px',
 					height: "3px",
 					transform: "rotate("+ this.state.timeRotation +"deg)",
 					transformOrigin: "0 0",
@@ -181,27 +195,27 @@ class WatchTimetable extends Component {
 				{/* logo */}
 				<img src="logo192.png" alt="logo" style={{
 					position: "absolute",
-					top: (360/2 - logoSize/2) + 'px',
-					left: (360/2 - logoSize/2) + 'px',
+					top: (watchSize/2 - logoSize/2) + 'px',
+					left: (watchSize/2 - logoSize/2) + 'px',
 					width: logoSize + 'px',
 					height: logoSize + 'px'
 				}} />
 
 				{/* text trace svg */}
-				<svg viewBox="0 0 360 360" style={{
+				<svg viewBox={"0 0 "+watchSize+" "+watchSize} style={{
 					position: "absolute",
 					top:"0",
 					left: "0",
-					width: '360px',
-					height: '360px'
+					width: watchSize+'px',
+					height: watchSize+'px'
 				}}>
 					{/* text: current status */}
 					<path id="curve_status" fill="none" d={
-						"M "+360/2+" "+360/2
-					+	"m -"+(textRadius/2)+", 0"
-					+	"a "+(textRadius/2)+","+(textRadius/2)+" 0 1,1 "+(textRadius)+",0"
+						" M "+watchSize/2+" "+watchSize/2
+					+	" m -"+(textRadius.status)+", 0"
+					+	" a "+(textRadius.status)+","+(textRadius.status)+" 0 1,1 "+(textRadius.status*2)+",0"
 					}/>
-					<text y="0" fontSize={(fontsizeStatus*1.4) + 'px'} style={{fill: this.state.colorScheme["text"]}}>
+					<text y="0" fontSize={(fontSize.status*1.4) + 'px'} style={{fill: this.state.colorScheme["text"]}}>
 						<textPath xlinkHref={"#curve_status"} textAnchor="middle" startOffset="50%">
 						{this.state.status}
 						</textPath>
@@ -209,11 +223,11 @@ class WatchTimetable extends Component {
 
 					{/* text: day of the week */}
 					<path id="curve_day" fill="none" d={
-						" M "+360/2+" "+360/2
-					+	" m -"+(textRadius/2)+", 0"
-					+	" a "+(textRadius/2)+","+(textRadius/2)+" 0 1,0 "+(textRadius)+",0"
+						" M "+watchSize/2+" "+watchSize/2
+					+	" m -"+(textRadius.day)+", 0"
+					+	" a "+(textRadius.day)+","+(textRadius.day)+" 0 1,0 "+(textRadius.day*2)+",0"
 					}/>
-					<text y={fontsizeDay} fontSize={(fontsizeDay*1.4) + 'px'} style={{fill: this.state.colorScheme["text"]}}>
+					<text y="0" fontSize={(fontSize.day*1.4) + 'px'} style={{fill: this.state.colorScheme["text"]}}>
 						<textPath xlinkHref={"#curve_day"} textAnchor="middle" startOffset="50%">
 							{days[this.state.today]}
 						</textPath>
