@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yon.si/WatchTimetable" version="1.0.0" viewmodes="maximized">
+    <access origin="https://yon.si/" subdomains="true"/>
+    <tizen:application id="MP38fMawoY.WatchTimetable" package="MP38fMawoY" required_version="5.5"/>
+    <author href="https://yon.si" email="watchtimetable@yon.si">Yon Ploj</author>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/network.internet"/>
+    <icon src="logo512.png"/>
+    <name>WatchTimetable</name>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:profile name="wearable"/>
+    <tizen:setting background-support="disable" encryption="disable" hwkey-event="enable"/>
+</widget>
